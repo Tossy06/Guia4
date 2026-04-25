@@ -1,0 +1,161 @@
+import { useEffect, useState } from 'react';
+import { getPaquetes, getRepartidores, updatePaquete, Paquete, Repartidor } from '../api/client';
+
+const ESTADOS = ['En bodega', 'En ruta', 'Entregado', 'Incidencia'] as const;
+
+const BADGE: Record<string, string> = {
+  'En bodega': 'badge-bodega',
+  'En ruta': 'badge-ruta',
+  'Entregado': 'badge-entregado',
+  'Incidencia': 'badge-incidencia',
+};
+
+export default function Dashboard() {
+  const [paquetes, setPaquetes] = useState<Paquete[]>([]);
+  const [repartidores, setRepartidores] = useState<Repartidor[]>([]);
+  const [selEstado, setSelEstado] = useState<Record<string, string>>({});
+  const [selRepartidor, setSelRepartidor] = useState<Record<string, string>>({});
+  const [guardando, setGuardando] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState('');
+  const [detalle, setDetalle] = useState<Paquete | null>(null);
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  const cargar = async () => {
+    const [ps, rs] = await Promise.all([getPaquetes(), getRepartidores()]);
+    setPaquetes(ps);
+    setRepartidores(rs);
+    const estados: Record<string, string> = {};
+    const reps: Record<string, string> = {};
+    ps.forEach(p => {
+      estados[p.id] = p.estado;
+      reps[p.id] = p.repartidorId || '';
+    });
+    setSelEstado(estados);
+    setSelRepartidor(reps);
+  };
+
+  const handleActualizar = async (id: string) => {
+    setGuardando(id);
+    try {
+      await updatePaquete(id, {
+        estado: selEstado[id] as any,
+        repartidorId: selRepartidor[id] || null,
+      });
+      await cargar();
+    } finally {
+      setGuardando(null);
+    }
+  };
+
+  const filtrados = paquetes.filter(p =>
+    p.id.toLowerCase().includes(busqueda.toLowerCase()) ||
+    p.remitente.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    p.destinatario.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const nombreRepartidor = (id: string | null) => {
+    if (!id) return '—';
+    return repartidores.find(r => r.id === id)?.nombre || id;
+  };
+
+  return (
+    <div className="page">
+      <h1>Dashboard Administrativo</h1>
+
+      <div className="toolbar">
+        <input
+          className="search-input"
+          placeholder="Buscar por guía, remitente o destinatario..."
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+        />
+        <span className="total-badge">{filtrados.length} paquete(s)</span>
+      </div>
+
+      {detalle && (
+        <div className="modal-overlay" onClick={() => setDetalle(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setDetalle(null)}>✕</button>
+            <h2>Detalle — {detalle.id}</h2>
+            <table className="detail-table">
+              <tbody>
+                <tr><th>Estado</th><td><span className={`badge ${BADGE[detalle.estado]}`}>{detalle.estado}</span></td></tr>
+                <tr><th>Remitente</th><td>{detalle.remitente.nombre} · {detalle.remitente.telefono}</td></tr>
+                <tr><th>Destinatario</th><td>{detalle.destinatario.nombre} · {detalle.destinatario.telefono}</td></tr>
+                <tr><th>Dirección</th><td>{detalle.destinatario.direccion}</td></tr>
+                <tr><th>Descripción</th><td>{detalle.paquete.descripcion}</td></tr>
+                <tr><th>Dimensiones</th><td>{detalle.paquete.dimensiones}</td></tr>
+                <tr><th>Peso</th><td>{detalle.paquete.peso}</td></tr>
+                <tr><th>Repartidor</th><td>{nombreRepartidor(detalle.repartidorId)}</td></tr>
+                <tr><th>Última ubicación</th><td>{detalle.ultimaUbicacion || '—'}</td></tr>
+                <tr><th>Última actualización</th><td>{new Date(detalle.ultimaActualizacion).toLocaleString('es-CO')}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <div className="table-wrapper">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Guía</th>
+              <th>Remitente</th>
+              <th>Destinatario</th>
+              <th>Estado</th>
+              <th>Repartidor</th>
+              <th>Actualización</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtrados.map(p => (
+              <tr key={p.id}>
+                <td className="guia-cell">{p.id}</td>
+                <td>{p.remitente.nombre}</td>
+                <td>
+                  <div>{p.destinatario.nombre}</div>
+                  <div className="sub">{p.destinatario.direccion}</div>
+                </td>
+                <td>
+                  <span className={`badge ${BADGE[p.estado]}`}>{p.estado}</span>
+                </td>
+                <td>{nombreRepartidor(p.repartidorId)}</td>
+                <td className="sub">{new Date(p.ultimaActualizacion).toLocaleString('es-CO')}</td>
+                <td className="actions-cell">
+                  <button className="btn-secondary btn-sm" onClick={() => setDetalle(p)}>Ver</button>
+                  <select
+                    value={selEstado[p.id] || p.estado}
+                    onChange={e => setSelEstado(s => ({ ...s, [p.id]: e.target.value }))}
+                  >
+                    {ESTADOS.map(est => <option key={est} value={est}>{est}</option>)}
+                  </select>
+                  <select
+                    value={selRepartidor[p.id] ?? (p.repartidorId || '')}
+                    onChange={e => setSelRepartidor(s => ({ ...s, [p.id]: e.target.value }))}
+                  >
+                    <option value="">Sin asignar</option>
+                    {repartidores.map(r => <option key={r.id} value={r.id}>{r.nombre}</option>)}
+                  </select>
+                  <button
+                    className="btn-primary btn-sm"
+                    onClick={() => handleActualizar(p.id)}
+                    disabled={guardando === p.id}
+                  >
+                    {guardando === p.id ? '...' : 'Actualizar'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filtrados.length === 0 && (
+              <tr><td colSpan={7} className="empty">No se encontraron paquetes.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
