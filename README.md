@@ -62,7 +62,7 @@ Guia4/
 ### 1. Instalar dependencias
 
 ```bash
-npm run install:all
+npm run install
 ```
 
 O de forma manual:
