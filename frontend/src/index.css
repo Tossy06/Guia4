@@ -166,6 +166,156 @@ input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px 
 }
 
 /* ── Table ── */
+/* Dashboard */
+.dashboard-page { max-width: 1280px; }
+.dashboard-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.dashboard-heading h1 { margin-bottom: 6px; }
+.dashboard-heading p {
+  color: var(--text-muted);
+  max-width: 620px;
+}
+.dashboard-eyebrow {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.dashboard-highlight {
+  min-width: 148px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  color: #9a3412;
+  box-shadow: var(--shadow);
+}
+.dashboard-highlight span,
+.dashboard-stat span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.dashboard-highlight strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1.1;
+}
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.dashboard-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.dashboard-stat strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 26px;
+  line-height: 1.1;
+}
+.dashboard-stat small {
+  color: currentColor;
+  opacity: .74;
+}
+.dashboard-stat.stat-total { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
+.dashboard-stat.badge-bodega { border-color: #bae6fd; color: #0369a1; background: #f0f9ff; }
+.dashboard-stat.badge-ruta { border-color: #fde68a; color: #854d0e; background: #fffbeb; }
+.dashboard-stat.badge-entregado { border-color: #bbf7d0; color: #166534; background: #f0fdf4; }
+.dashboard-stat.badge-incidencia { border-color: #fecaca; color: #991b1b; background: #fef2f2; }
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.dashboard-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.dashboard-search .search-input {
+  max-width: 460px;
+  min-width: 260px;
+}
+.dashboard-page .btn-secondary:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.dashboard-page .table-wrapper {
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.dashboard-page .data-table th { background: #f8fafc; }
+.dashboard-page .data-table tbody tr { transition: background .15s; }
+.dashboard-page .actions-cell { min-width: 360px; }
+.dashboard-action-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dashboard-action-group select { min-width: 126px; }
+.dashboard-page .btn-muted { background: #94a3b8; }
+.dashboard-page .btn-muted:hover:not(:disabled) { background: #64748b; }
+.dashboard-modal { max-width: 640px; }
+.dashboard-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-right: 28px;
+  margin-bottom: 18px;
+}
+.dashboard-modal-head h2 {
+  margin-bottom: 0;
+  font-family: monospace;
+  color: var(--primary);
+}
+@media (max-width: 900px) {
+  .dashboard-heading,
+  .dashboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dashboard-highlight { width: 100%; }
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-search { width: 100%; }
+  .dashboard-search .search-input {
+    max-width: none;
+    min-width: 0;
+  }
+}
+@media (max-width: 560px) {
+  .dashboard-stats { grid-template-columns: 1fr; }
+  .dashboard-search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dashboard-page .actions-cell { min-width: 280px; }
+  .dashboard-action-group,
+  .dashboard-action-group select {
+    width: 100%;
+  }
+}
+
 .table-wrapper { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
 .data-table {
   width: 100%;
