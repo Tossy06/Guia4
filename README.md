@@ -28,7 +28,7 @@ Guia4/
             └── Rastreo.tsx         # Portal público
 ```
 
-## Endpoints del Backend
+## Endpoints del Backend .
 
 **Base URL:** `http://localhost:3000/api`
 
