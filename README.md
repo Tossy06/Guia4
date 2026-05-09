@@ -1,4 +1,4 @@
-# Repartos Rápidos SAS
+# Repartos Rápidos SAS.
 
 Sistema web fullstack para la gestión de paquetes y monitoreo de repartidores, desarrollado como Guía 4.
 
