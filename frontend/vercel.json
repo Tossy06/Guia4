@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+      {
+        "source": "/api/:path*",
+        "destination": "https://guia4-2lqm.vercel.app/api/:path*"
+      }
+    ]
+}
